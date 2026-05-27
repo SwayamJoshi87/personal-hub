@@ -36,6 +36,16 @@ export async function deleteWorkItem(id: string) {
   revalidatePath('/work')
 }
 
+export async function completeWorkItem(id: string) {
+  await db.update(workItems).set({ completedAt: new Date() }).where(eq(workItems.id, id))
+  revalidatePath('/work')
+}
+
+export async function uncompleteWorkItem(id: string) {
+  await db.update(workItems).set({ completedAt: null }).where(eq(workItems.id, id))
+  revalidatePath('/work')
+}
+
 export async function reorderWorkItems(orderedIds: string[]) {
   await Promise.all(
     orderedIds.map((id, index) =>

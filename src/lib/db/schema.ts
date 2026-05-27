@@ -7,6 +7,7 @@ export const workItems = pgTable('work_items', {
   url: text('url'),
   order: integer('order').notNull().default(0),
   createdAt: timestamp('created_at').defaultNow().notNull(),
+  completedAt: timestamp('completed_at'),
 })
 
 export type WorkItem = typeof workItems.$inferSelect

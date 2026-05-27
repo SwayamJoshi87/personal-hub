@@ -8,6 +8,13 @@
       "when": 1779846627938,
       "tag": "0000_supreme_pyro",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1779847689434,
+      "tag": "0001_modern_black_panther",
+      "breakpoints": true
     }
   ]
 }
