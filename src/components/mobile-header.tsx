@@ -16,9 +16,13 @@ export function MobileHeader({ title }: { title: string }) {
         <Menu className="h-4 w-4" />
       </Button>
       <Sheet open={open} onOpenChange={setOpen}>
-        <SheetContent side="left" className="w-52 p-0">
+        <SheetContent
+          side="left"
+          showCloseButton={false}
+          className="w-[220px] p-0 gap-0"
+        >
           <SheetTitle className="sr-only">Navigation</SheetTitle>
-          <Sidebar />
+          <Sidebar onClose={() => setOpen(false)} />
         </SheetContent>
       </Sheet>
     </header>
