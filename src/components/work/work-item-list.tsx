@@ -1,6 +1,6 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
+import { useState } from "react";
 import {
   DndContext,
   closestCenter,
@@ -11,52 +11,54 @@ import {
   DragEndEvent,
   DragOverlay,
   DragStartEvent,
-} from '@dnd-kit/core'
+} from "@dnd-kit/core";
 import {
   SortableContext,
   verticalListSortingStrategy,
   arrayMove,
-} from '@dnd-kit/sortable'
-import { ChevronDown } from 'lucide-react'
-import { WorkItemRow } from '@/components/work/work-item'
-import { AddItemInput } from '@/components/work/add-item-input'
+} from "@dnd-kit/sortable";
+import { ChevronDown } from "lucide-react";
+import { WorkItemRow } from "@/components/work/work-item";
+import { AddItemInput } from "@/components/work/add-item-input";
 import {
   deleteWorkItem,
   reorderWorkItems,
   completeWorkItem,
   uncompleteWorkItem,
-} from '@/lib/actions/work-items'
-import type { WorkItem } from '@/lib/db/schema'
-import { cn } from '@/lib/utils'
+} from "@/lib/actions/work-items";
+import type { WorkItem } from "@/lib/db/schema";
+import { cn } from "@/lib/utils";
 
 export function WorkItemList({ initialItems }: { initialItems: WorkItem[] }) {
-  const [items, setItems] = useState<WorkItem[]>(initialItems)
-  const [activeId, setActiveId] = useState<string | null>(null)
-  const [showCompleted, setShowCompleted] = useState(false)
+  const [items, setItems] = useState<WorkItem[]>(initialItems);
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [showCompleted, setShowCompleted] = useState(false);
 
-  const activeItems = items.filter((i) => i.completedAt === null)
-  const completedItems = items.filter((i) => i.completedAt !== null)
+  const activeItems = items.filter((i) => i.completedAt === null);
+  const completedItems = items.filter((i) => i.completedAt !== null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
-    useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } })
-  )
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 150, tolerance: 5 },
+    }),
+  );
 
   function handleDragStart(event: DragStartEvent) {
-    setActiveId(event.active.id as string)
+    setActiveId(event.active.id as string);
   }
 
   async function handleDragEnd(event: DragEndEvent) {
-    setActiveId(null)
-    const { active, over } = event
-    if (!over || active.id === over.id) return
+    setActiveId(null);
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-    const oldIndex = activeItems.findIndex((i) => i.id === active.id)
-    const newIndex = activeItems.findIndex((i) => i.id === over.id)
-    const reordered = arrayMove(activeItems, oldIndex, newIndex)
+    const oldIndex = activeItems.findIndex((i) => i.id === active.id);
+    const newIndex = activeItems.findIndex((i) => i.id === over.id);
+    const reordered = arrayMove(activeItems, oldIndex, newIndex);
 
-    setItems([...reordered, ...completedItems])
-    await reorderWorkItems(reordered.map((i) => i.id))
+    setItems([...reordered, ...completedItems]);
+    await reorderWorkItems(reordered.map((i) => i.id));
   }
 
   function handleOptimisticAdd(title: string) {
@@ -67,39 +69,43 @@ export function WorkItemList({ initialItems }: { initialItems: WorkItem[] }) {
       order: activeItems.length,
       createdAt: new Date(),
       completedAt: null,
-    }
-    setItems((prev) => [...prev, tempItem])
+    };
+    setItems((prev) => [...prev, tempItem]);
   }
 
   async function handleDelete(id: string) {
-    setItems((prev) => prev.filter((i) => i.id !== id))
-    await deleteWorkItem(id)
+    setItems((prev) => prev.filter((i) => i.id !== id));
+    await deleteWorkItem(id);
   }
 
   async function handleComplete(id: string) {
     setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, completedAt: new Date() } : i))
-    )
-    await completeWorkItem(id)
+      prev.map((i) => (i.id === id ? { ...i, completedAt: new Date() } : i)),
+    );
+    await completeWorkItem(id);
   }
 
   async function handleUncomplete(id: string) {
     setItems((prev) =>
-      prev.map((i) => (i.id === id ? { ...i, completedAt: null } : i))
-    )
-    await uncompleteWorkItem(id)
+      prev.map((i) => (i.id === id ? { ...i, completedAt: null } : i)),
+    );
+    await uncompleteWorkItem(id);
   }
 
-  const draggedItem = activeItems.find((i) => i.id === activeId)
+  const draggedItem = activeItems.find((i) => i.id === activeId);
 
   return (
     <DndContext
+      id="work-items-dnd"
       sensors={sensors}
       collisionDetection={closestCenter}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
-      <SortableContext items={activeItems.map((i) => i.id)} strategy={verticalListSortingStrategy}>
+      <SortableContext
+        items={activeItems.map((i) => i.id)}
+        strategy={verticalListSortingStrategy}
+      >
         <div className="flex flex-col gap-2">
           {activeItems.map((item) => (
             <WorkItemRow
@@ -132,8 +138,8 @@ export function WorkItemList({ initialItems }: { initialItems: WorkItem[] }) {
           >
             <ChevronDown
               className={cn(
-                'h-3.5 w-3.5 transition-transform',
-                !showCompleted && '-rotate-90'
+                "h-3.5 w-3.5 transition-transform",
+                !showCompleted && "-rotate-90",
               )}
             />
             Completed ({completedItems.length})
@@ -153,5 +159,5 @@ export function WorkItemList({ initialItems }: { initialItems: WorkItem[] }) {
         </div>
       )}
     </DndContext>
-  )
+  );
 }
